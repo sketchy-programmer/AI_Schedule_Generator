@@ -1,0 +1,19 @@
+Project: AI Website Development
+        
+        We need to build an AI-powered website that integrates with Microsoft Project Professional.
+        The site will allow users to upload project overviews and automatically generate project schedules.
+        
+        Key requirements:
+        - Web interface for document upload
+        - AI processing of project documents
+        - Integration with Microsoft Project
+        - Task management and resource allocation
+        
+        Team members:
+        - Project Manager
+        - Backend Developer 
+        - Frontend Developer
+        - AI Specialist
+        - QA Engineer
+        
+        Timeline: The project should be completed within 2 months.
