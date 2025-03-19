@@ -1,0 +1,5 @@
+# .gitignore
+.env
+config.py
+secret_keys.json
+*.env
