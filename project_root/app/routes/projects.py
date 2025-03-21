@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_file, jsonify
 import xml.etree.ElementTree as ET
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -147,29 +147,28 @@ def project_details(project_id):
     
     return render_template('project_details.html', project=project)
 
-# @projects.route('/projects/<project_id>/download')
-# @login_required
-# def download_project_file(project_id):
-#     project = Project.get(project_id)
-#     if not project or project.owner_id != current_user.id:
-#         flash('Project not found')
-#         return redirect(url_for('main.dashboard'))
+@projects.route('/projects/<project_id>/download')
+@login_required
+def download_project_file(project_id):
+    project = Project.get(project_id)
+    if not project or project.owner_id != current_user.id:
+        flash('Project not found')
+        return redirect(url_for('main.dashboard'))
     
-#     # Get project file path dynamically
-#     project_file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], project.project_file)
+    # Check if project file path exists
+    if not project.project_file or not os.path.exists(project.project_file):
+        flash('Project file not found')
+        return redirect(url_for('projects.project_details', project_id=project_id))
     
-#     # Verify file exists
-#     if not os.path.exists(project_file_path):
-#         flash('Project file not found')
-#         return redirect(url_for('projects.project_details', project_id=project_id))
-    
-#     # Get the filename
-#     filename = os.path.basename(project_file_path)
-    
-#     # Return file as an attachment
-#     return send_file(
-#         project_file_path,
-#         as_attachment=True,
-#         download_name=f"{project.project_name}.mpp",
-#         mimetype='application/vnd.ms-project'
-#     )
+    try:
+        # Return file as an attachment
+        return send_file(
+            project.project_file,
+            as_attachment=True,
+            download_name=f"{project.project_name}.mpp",
+            mimetype='application/vnd.ms-project'
+        )
+    except Exception as e:
+        print(f"Download error: {str(e)}")
+        flash(f"Error downloading file: {str(e)}")
+        return redirect(url_for('projects.project_details', project_id=project_id))
