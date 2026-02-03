@@ -8,8 +8,6 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MS_PROJECT_CLIENT_ID=${MS_PROJECT_CLIENT_ID}
-      - MS_PROJECT_CLIENT_SECRET=${MS_PROJECT_CLIENT_SECRET}
       - FLASK_ENV=production
     volumes:
       - uploads_data:/app/uploads
