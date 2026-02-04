@@ -58,15 +58,15 @@ def process_project_overview(document_text):
     # Prepare user message
     user_message = f"Here's a project overview. Please analyze it and create a project schedule:\n\n{document_text}"
     
-    # Call OpenAI API
+    # Call OpenAI API - using gpt-4o-mini for faster response
     response = openai.chat.completions.create(
-        model="gpt-4-turbo",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}
         ],
         temperature=0.3,
-        max_tokens=4000
+        max_tokens=2000
     )
     
     # Parse the response
