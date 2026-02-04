@@ -22,7 +22,11 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def get(user_id):
-        return User.query.get(int(user_id))
+        try:
+            return User.query.get(int(user_id))
+        except (ValueError, TypeError):
+            # Handle old UUID-based session cookies gracefully
+            return None
 
     @staticmethod
     def create(username, email, password):
