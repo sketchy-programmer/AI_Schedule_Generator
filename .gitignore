@@ -2,3 +2,22 @@
 .env
 secret_keys.json
 *.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
