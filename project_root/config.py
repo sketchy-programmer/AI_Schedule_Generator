@@ -10,3 +10,8 @@ class Config:
     UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'docx', 'doc'}
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+    # Database configuration - Heroku provides DATABASE_URL
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://') or \
+        'sqlite:///' + os.path.join(basedir, 'app.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

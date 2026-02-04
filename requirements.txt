@@ -1,6 +1,8 @@
 flask==2.3.3
 flask-wtf==1.1.1
 flask-login==0.6.2
+flask-sqlalchemy==3.1.1
+psycopg2-binary==2.9.9
 python-docx==0.8.11
 PyPDF2==3.0.1
 openai>=1.40.0

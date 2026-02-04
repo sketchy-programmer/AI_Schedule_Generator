@@ -1,37 +1,61 @@
-import uuid
 import datetime
+import json
+from app.extensions import db
 
-# Simple in-memory project store (replace with a database in production)
-projects_db = {}
 
-class Project:
-    def __init__(self, id, project_name, owner_id, overview_file, project_file=None):
-        self.id = id
-        self.project_name = project_name
-        self.owner_id = owner_id
-        self.overview_file = overview_file
-        self.project_file = project_file
-        self.created_at = datetime.datetime.now()
-        self.tasks = []
-        self.resources = []
-    
+class Project(db.Model):
+    __tablename__ = 'projects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    project_name = db.Column(db.String(200), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    overview_file = db.Column(db.String(500))
+    project_file = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    tasks_json = db.Column(db.Text, default='[]')
+    resources_json = db.Column(db.Text, default='[]')
+
+    @property
+    def tasks(self):
+        return json.loads(self.tasks_json or '[]')
+
+    @tasks.setter
+    def tasks(self, value):
+        self.tasks_json = json.dumps(value)
+        db.session.commit()
+
+    @property
+    def resources(self):
+        return json.loads(self.resources_json or '[]')
+
+    @resources.setter
+    def resources(self, value):
+        self.resources_json = json.dumps(value)
+        db.session.commit()
+
     @staticmethod
     def get(project_id):
-        return projects_db.get(project_id)
-    
+        return Project.query.get(int(project_id))
+
     @staticmethod
     def get_by_owner(owner_id):
-        return [p for p in projects_db.values() if p.owner_id == owner_id]
-    
+        return Project.query.filter_by(owner_id=owner_id).all()
+
     @staticmethod
     def create(project_name, owner_id, overview_file, project_file=None):
-        project_id = str(uuid.uuid4())
-        project = Project(project_id, project_name, owner_id, overview_file, project_file)
-        projects_db[project_id] = project
+        project = Project(
+            project_name=project_name,
+            owner_id=owner_id,
+            overview_file=overview_file,
+            project_file=project_file
+        )
+        db.session.add(project)
+        db.session.commit()
         return project
-    
+
     def add_task(self, name, duration, predecessors=None, resources=None):
-        task_id = len(self.tasks) + 1
+        tasks = self.tasks
+        task_id = len(tasks) + 1
         task = {
             'id': task_id,
             'name': name,
@@ -39,15 +63,20 @@ class Project:
             'predecessors': predecessors or [],
             'resources': resources or []
         }
-        self.tasks.append(task)
+        tasks.append(task)
+        self.tasks_json = json.dumps(tasks)
+        db.session.commit()
         return task
-    
+
     def add_resource(self, name, capacity=100):
-        resource_id = len(self.resources) + 1
+        resources = self.resources
+        resource_id = len(resources) + 1
         resource = {
             'id': resource_id,
             'name': name,
             'capacity': capacity
         }
-        self.resources.append(resource)
+        resources.append(resource)
+        self.resources_json = json.dumps(resources)
+        db.session.commit()
         return resource
